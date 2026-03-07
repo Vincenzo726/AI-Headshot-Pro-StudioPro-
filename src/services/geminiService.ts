@@ -14,7 +14,18 @@ export async function generateHeadshot(
 ): Promise<GenerationResult> {
   const startTime = Date.now();
   const generationId = crypto.randomUUID();
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  
+  // Robust API key retrieval for both local and deployment environments
+  const apiKey = process.env.GEMINI_API_KEY || 
+                 (import.meta as any).env?.GEMINI_API_KEY || 
+                 (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    console.error("[GeminiService] Missing API Key. Ensure GEMINI_API_KEY is set in your environment variables.");
+    throw new Error("Gemini API Key is missing. Please set GEMINI_API_KEY in your deployment environment variables (e.g., Netlify settings).");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   console.log("[GeminiService] Preparing prompt for style:", style.name);
   const backgroundPrompt = background 
