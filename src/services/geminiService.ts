@@ -7,6 +7,11 @@ export interface GenerationResult {
   generationId: string;
 }
 
+// WARNING: Hardcoding your API key is NOT recommended for production.
+// It exposes your key to anyone who visits your website.
+// Use environment variables (like GEMINI_API_KEY in Netlify) instead.
+const HARDCODED_API_KEY = ""; 
+
 export async function generateHeadshot(
   imageBuffer: string, // base64
   style: HeadshotStyle,
@@ -15,8 +20,9 @@ export async function generateHeadshot(
   const startTime = Date.now();
   const generationId = crypto.randomUUID();
   
-  // Robust API key retrieval for both local and deployment environments
-  const apiKey = process.env.GEMINI_API_KEY || 
+  // Robust API key retrieval: Hardcoded > Environment > Vite Env
+  const apiKey = HARDCODED_API_KEY || 
+                 process.env.GEMINI_API_KEY || 
                  (import.meta as any).env?.GEMINI_API_KEY || 
                  (import.meta as any).env?.VITE_GEMINI_API_KEY;
   
